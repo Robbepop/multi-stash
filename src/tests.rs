@@ -102,6 +102,8 @@ fn take_ascending() {
     assert_eq!(stash.take_one(Key(4)), Some((0, 'E')));
 
     assert!(stash.is_empty());
+
+    assert_eq!(stash.put('F', nz(4)), Key(0));
 }
 
 #[test]
@@ -119,6 +121,35 @@ fn take_all_reverse() {
     assert_eq!(stash.take_all(Key(2)), Some((1, 'C')));
     assert_eq!(stash.take_all(Key(1)), Some((3, 'B')));
     assert_eq!(stash.take_all(Key(0)), Some((2, 'A')));
+
+    // Since we clear stash if it is empty after take we
+    // can observe key(0) for our next insert instead of
+    // key(4) which we would get without the reset.
+    assert_eq!(stash.put('F', nz(4)), Key(0));
+}
+
+#[test]
+fn take_all_but_one_then_refill() {
+    let mut stash = <MultiStash<char>>::new();
+    stash.extend([
+        (nz(2), 'A'),
+        (nz(3), 'B'),
+        (nz(1), 'C'),
+        (nz(5), 'D'),
+        (nz(1), 'E'),
+    ]);
+    assert_eq!(stash.take_all(Key(0)), Some((2, 'A')));
+    assert_eq!(stash.take_all(Key(1)), Some((3, 'B')));
+    // key(2) not taken!
+    assert_eq!(stash.take_all(Key(3)), Some((5, 'D')));
+    assert_eq!(stash.take_all(Key(4)), Some((1, 'E')));
+
+    assert_eq!(stash.put('F', nz(4)), Key(4));
+    assert_eq!(stash.put('G', nz(5)), Key(3));
+    assert_eq!(stash.put('H', nz(6)), Key(1));
+    assert_eq!(stash.put('H', nz(7)), Key(0));
+    // Now we fill stash from the back again:
+    assert_eq!(stash.put('I', nz(8)), Key(5));
 }
 
 #[test]
