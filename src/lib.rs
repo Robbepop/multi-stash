@@ -285,11 +285,12 @@ impl<T> MultiStash<T> {
 }
 
 impl<T: Clone> MultiStash<T> {
-    /// Returns a single item of the `element` at `key`.
+    /// Returns a single item of the `element` at `key`
+    /// and the amount of remaining items after this operation.
     ///
     /// Remove the `element` if no items are left after this operation.
     /// Returns `None` if `key` refers to a vacant entry or is out of bounds.
-    pub fn take_one(&mut self, key: Key) -> Option<T> {
+    pub fn take_one(&mut self, key: Key) -> Option<(usize, T)> {
         let index = key.0;
         let taken = match self.entries.get_mut(index) {
             None => None,
@@ -305,11 +306,11 @@ impl<T: Clone> MultiStash<T> {
                     match NonZeroUsize::new(occupied.remaining.get().wrapping_sub(1)) {
                         Some(remaining) => {
                             *entry = Entry::from(OccupiedEntry::new(item.clone(), remaining));
-                            Some(item)
+                            Some((remaining.get(), item))
                         }
                         None => {
                             self.len_occupied -= 1;
-                            Some(item)
+                            Some((0, item))
                         }
                     }
                 }
