@@ -217,7 +217,10 @@ impl<T> MultiStash<T> {
             let cell = unsafe { self.entries.get_unchecked_mut(self.free) };
             match mem::replace(cell, Entry::from(OccupiedEntry::new(item, amount))) {
                 Entry::Vacant(entry) => entry.next_free,
-                _ => unreachable!("asserted that the entry at `self.free` is vacant"),
+                _ => unreachable!(
+                    "asserted that the entry at `self.free` ({}) is vacant",
+                    self.free
+                ),
             }
         };
         self.len_items = self.len_items.checked_add(amount.get()).unwrap_or_else(|| {
