@@ -1,6 +1,6 @@
 use super::{Entry, Key, MultiStash};
 use alloc::vec;
-use core::iter::Enumerate;
+use core::iter::{Enumerate, FusedIterator};
 use core::slice;
 
 /// Immutable [`MultiStash`] iterator.
@@ -62,6 +62,8 @@ impl<'a, T> ExactSizeIterator for Iter<'a, T> {
     }
 }
 
+impl<'a, T> FusedIterator for Iter<'a, T> {}
+
 /// Mutable [`MultiStash`] iterator.
 ///
 /// This struct is created by [`MultiStash::iter_mut`].
@@ -120,6 +122,8 @@ impl<'a, T> ExactSizeIterator for IterMut<'a, T> {
         self.remaining
     }
 }
+
+impl<'a, T> FusedIterator for IterMut<'a, T> {}
 
 /// An iterator that moves out of a [`MultiStash`].
 ///
@@ -180,3 +184,5 @@ impl<T> ExactSizeIterator for IntoIter<T> {
         self.remaining
     }
 }
+
+impl<T> FusedIterator for IntoIter<T> {}
