@@ -303,7 +303,6 @@ impl<T: Clone> MultiStash<T> {
                     None
                 }
                 Entry::Occupied(occupied) => {
-                    self.free = index;
                     let item = occupied.item;
                     self.len_items -= 1;
                     match NonZeroUsize::new(occupied.remaining.get().wrapping_sub(1)) {
@@ -313,6 +312,7 @@ impl<T: Clone> MultiStash<T> {
                         }
                         None => {
                             self.len_occupied -= 1;
+                            self.free = index;
                             Some((0, item))
                         }
                     }
