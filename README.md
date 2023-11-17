@@ -4,11 +4,11 @@ A vector-like data structure that is able to reuse slots for new elements.
 
 Specifically allows for (armortized) O(1) instructions for:
 
-- [`MultiStash::put`]
-- [`MultiStash::take_one`]
-- [`MultiStash::take_all`]
-- [`MultiStash::get`]
-- [`MultiStash::get_mut`]
+- `MultiStash::put`
+- `MultiStash::take_one`
+- `MultiStash::take_all`
+- `MultiStash::get`
+- `MultiStash::get_mut`
 
 ## License
 
