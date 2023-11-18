@@ -223,15 +223,23 @@ impl<T> MultiStash<T> {
                 ),
             }
         };
-        self.len_items = self.len_items.checked_add(amount.get()).unwrap_or_else(|| {
-            panic!(
-                "failed to add {} items to MultiStash of length {}",
-                amount.get(),
-                self.len_items
-            )
-        });
+        self.bump_len_items(amount.get());
         self.len_occupied += 1;
         key
+    }
+
+    /// Bumps the number of items in the [`MultiStash`] by `amount`.
+    ///
+    /// # Panics
+    ///
+    /// If the number of items in the [`MultiStash`] overflows.
+    fn bump_len_items(&mut self, amount: usize) {
+        self.len_items = self.len_items.checked_add(amount).unwrap_or_else(|| {
+            panic!(
+                "failed to add {} items to MultiStash of length {}",
+                amount, self.len_items
+            )
+        });
     }
 
     /// Clears the [`MultiStash`], removing all elements.
@@ -292,6 +300,7 @@ impl<T> MultiStash<T> {
                     )
                 });
                 entry.remaining = new_amount;
+                self.bump_len_items(amount);
                 Some(old_amount.get())
             }
         }
