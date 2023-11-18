@@ -272,6 +272,31 @@ impl<T> MultiStash<T> {
         taken
     }
 
+    /// Bumps the amount of items of the element at `key` if any.
+    ///
+    /// Returns `None` if not element is found at the `key`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `amount` of the element at `key` overflows.
+    pub fn bump(&mut self, key: Key, amount: usize) -> Option<usize> {
+        let index = key.0;
+        match self.entries.get_mut(index)? {
+            Entry::Vacant(_) => None,
+            Entry::Occupied(entry) => {
+                let old_amount = entry.remaining;
+                let new_amount = old_amount.checked_add(amount).unwrap_or_else(|| {
+                    panic!(
+                        "overflow when adding {} to the amount of MultiStash element at {}",
+                        amount, index,
+                    )
+                });
+                entry.remaining = new_amount;
+                Some(old_amount.get())
+            }
+        }
+    }
+
     /// Returns an iterator over the elements of the [`MultiStash`].
     ///
     /// The iterator yields all elements, their keys and remaining items from start to end.

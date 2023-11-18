@@ -167,3 +167,19 @@ fn put_fails_1() {
     assert_eq!(stash.put('A', nz(1)), Key(0));
     stash.put('B', nz(usize::MAX));
 }
+
+#[test]
+fn bump_works() {
+    let mut stash = <MultiStash<char>>::new();
+    assert_eq!(stash.put('A', nz(1)), Key(0));
+    assert_eq!(stash.put('B', nz(2)), Key(1));
+    assert_eq!(stash.put('C', nz(3)), Key(2));
+    assert_eq!(stash.bump(Key(2), 0), Some(3));
+    assert_eq!(stash.bump(Key(2), 1), Some(3));
+    assert_eq!(stash.bump(Key(2), 2), Some(4));
+    assert_eq!(stash.bump(Key(0), 10), Some(1));
+    assert_eq!(stash.bump(Key(1), 100), Some(2));
+    assert_eq!(stash.get(Key(0)), Some((11, &'A')));
+    assert_eq!(stash.get(Key(1)), Some((102, &'B')));
+    assert_eq!(stash.get(Key(2)), Some((6, &'C')));
+}
