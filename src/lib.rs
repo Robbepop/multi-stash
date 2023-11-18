@@ -205,7 +205,7 @@ impl<T> MultiStash<T> {
     /// # Panics
     ///
     /// Panics if the new capacity exceeds `isize::MAX` bytes.
-    pub fn put(&mut self, item: T, amount: NonZeroUsize) -> Key {
+    pub fn put(&mut self, amount: NonZeroUsize, item: T) -> Key {
         let key = Key(self.free);
         self.free = if self.free == self.len_entries() {
             self.entries
@@ -399,7 +399,7 @@ impl<T> IndexMut<Key> for MultiStash<T> {
 impl<T> Extend<(NonZeroUsize, T)> for MultiStash<T> {
     fn extend<I: IntoIterator<Item = (NonZeroUsize, T)>>(&mut self, iter: I) {
         for (amount, item) in iter {
-            self.put(item, amount);
+            self.put(amount, item);
         }
     }
 }

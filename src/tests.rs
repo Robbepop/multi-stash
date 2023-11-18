@@ -19,11 +19,11 @@ fn new_works() {
 #[test]
 fn put_works() {
     let mut stash = <MultiStash<char>>::new();
-    assert_eq!(stash.put('A', nz(3)), Key(0));
+    assert_eq!(stash.put(nz(3), 'A'), Key(0));
     assert!(!stash.is_empty());
     assert_eq!(stash.len(), 1);
     assert_eq!(stash.len_items(), 3);
-    assert_eq!(stash.put('B', nz(2)), Key(1));
+    assert_eq!(stash.put(nz(2), 'B'), Key(1));
     assert_eq!(stash.len(), 2);
     assert_eq!(stash.len_items(), 5);
 }
@@ -31,9 +31,9 @@ fn put_works() {
 #[test]
 fn put_after_take_works() {
     let mut stash = <MultiStash<char>>::new();
-    assert_eq!(stash.put('A', nz(3)), Key(0));
-    assert_eq!(stash.put('B', nz(2)), Key(1));
-    assert_eq!(stash.put('C', nz(4)), Key(2));
+    assert_eq!(stash.put(nz(3), 'A'), Key(0));
+    assert_eq!(stash.put(nz(2), 'B'), Key(1));
+    assert_eq!(stash.put(nz(4), 'C'), Key(2));
     assert_eq!(stash.len(), 3);
     assert_eq!(stash.len_items(), 9);
     assert_eq!(stash.take_one(Key(1)), Some((1, 'B')));
@@ -42,10 +42,10 @@ fn put_after_take_works() {
     assert_eq!(stash.take_one(Key(1)), Some((0, 'B')));
     assert_eq!(stash.len(), 2);
     assert_eq!(stash.len_items(), 7);
-    assert_eq!(stash.put('D', nz(3)), Key(1));
+    assert_eq!(stash.put(nz(3), 'D'), Key(1));
     assert_eq!(stash.len(), 3);
     assert_eq!(stash.len_items(), 10);
-    assert_eq!(stash.put('E', nz(1)), Key(3));
+    assert_eq!(stash.put(nz(1), 'E'), Key(3));
     assert_eq!(stash.len(), 4);
     assert_eq!(stash.len_items(), 11);
 }
@@ -103,7 +103,7 @@ fn take_ascending() {
 
     assert!(stash.is_empty());
 
-    assert_eq!(stash.put('F', nz(4)), Key(0));
+    assert_eq!(stash.put(nz(4), 'F'), Key(0));
 }
 
 #[test]
@@ -125,7 +125,7 @@ fn take_all_reverse() {
     // Since we clear stash if it is empty after take we
     // can observe key(0) for our next insert instead of
     // key(4) which we would get without the reset.
-    assert_eq!(stash.put('F', nz(4)), Key(0));
+    assert_eq!(stash.put(nz(4), 'F'), Key(0));
 }
 
 #[test]
@@ -144,36 +144,36 @@ fn take_all_but_one_then_refill() {
     assert_eq!(stash.take_all(Key(3)), Some((5, 'D')));
     assert_eq!(stash.take_all(Key(4)), Some((1, 'E')));
 
-    assert_eq!(stash.put('F', nz(4)), Key(4));
-    assert_eq!(stash.put('G', nz(5)), Key(3));
-    assert_eq!(stash.put('H', nz(6)), Key(1));
-    assert_eq!(stash.put('H', nz(7)), Key(0));
+    assert_eq!(stash.put(nz(4), 'F'), Key(4));
+    assert_eq!(stash.put(nz(5), 'G'), Key(3));
+    assert_eq!(stash.put(nz(6), 'H'), Key(1));
+    assert_eq!(stash.put(nz(7), 'H'), Key(0));
     // Now we fill stash from the back again:
-    assert_eq!(stash.put('I', nz(8)), Key(5));
+    assert_eq!(stash.put(nz(8), 'I'), Key(5));
 }
 
 #[test]
 #[should_panic]
 fn put_fails_0() {
     let mut stash = <MultiStash<char>>::new();
-    assert_eq!(stash.put('A', nz(usize::MAX)), Key(0));
-    stash.put('B', nz(1));
+    assert_eq!(stash.put(nz(usize::MAX), 'A'), Key(0));
+    stash.put(nz(1), 'B');
 }
 
 #[test]
 #[should_panic]
 fn put_fails_1() {
     let mut stash = <MultiStash<char>>::new();
-    assert_eq!(stash.put('A', nz(1)), Key(0));
-    stash.put('B', nz(usize::MAX));
+    assert_eq!(stash.put(nz(1), 'A'), Key(0));
+    stash.put(nz(usize::MAX), 'B');
 }
 
 #[test]
 fn bump_works() {
     let mut stash = <MultiStash<char>>::new();
-    assert_eq!(stash.put('A', nz(1)), Key(0));
-    assert_eq!(stash.put('B', nz(2)), Key(1));
-    assert_eq!(stash.put('C', nz(3)), Key(2));
+    assert_eq!(stash.put(nz(1), 'A'), Key(0));
+    assert_eq!(stash.put(nz(2), 'B'), Key(1));
+    assert_eq!(stash.put(nz(3), 'C'), Key(2));
     assert_eq!(stash.bump(Key(2), 0), Some(3));
     assert_eq!(stash.bump(Key(2), 1), Some(3));
     assert_eq!(stash.bump(Key(2), 2), Some(4));
