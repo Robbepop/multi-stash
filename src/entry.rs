@@ -31,15 +31,15 @@ impl VacantEntry {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct OccupiedEntry<T> {
-    pub item: T,
     pub remaining: NonZeroUsize,
+    pub item: T,
 }
 
 impl<T> OccupiedEntry<T> {
     pub fn new(item: T, amount: NonZeroUsize) -> Self {
         Self {
-            item,
             remaining: amount,
+            item,
         }
     }
 }
