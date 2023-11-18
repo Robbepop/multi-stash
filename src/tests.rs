@@ -183,3 +183,29 @@ fn bump_works() {
     assert_eq!(stash.get(Key(1)), Some((102, &'B')));
     assert_eq!(stash.get(Key(2)), Some((6, &'C')));
 }
+
+#[test]
+#[should_panic]
+fn bump_fails_0() {
+    let mut stash = <MultiStash<char>>::new();
+    assert_eq!(stash.put(nz(usize::MAX), 'A'), Key(0));
+    stash.bump(Key(0), 1);
+}
+
+#[test]
+#[should_panic]
+fn bump_fails_1() {
+    let mut stash = <MultiStash<char>>::new();
+    assert_eq!(stash.put(nz(1), 'A'), Key(0));
+    stash.bump(Key(0), usize::MAX);
+}
+
+#[test]
+#[should_panic]
+fn bump_fails_2() {
+    let mut stash = <MultiStash<char>>::new();
+    assert_eq!(stash.put(nz(1000), 'A'), Key(0));
+    assert_eq!(stash.put(nz(1000), 'B'), Key(0));
+    stash.bump(Key(0), usize::MAX / 2);
+    stash.bump(Key(1), usize::MAX / 2);
+}
